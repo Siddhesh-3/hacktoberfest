@@ -1,4 +1,9 @@
-# Hacktoberfest
+# Hacktoberfest 2021
+<div align="center">
+  <img src="https://hacktoberfest.digitalocean.com/_nuxt/img/logo-hacktoberfest-full.f42e3b1.svg" />
+  </div>
+Follow the README below to get started!  
+
 # About this Repo :-
 * This repo is participating in Hactober fest 2021.
 * It contains the basic programs like searching, sorting, pattern making, swapping 

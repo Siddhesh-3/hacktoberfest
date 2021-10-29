@@ -1,0 +1,172 @@
+#include<stdio.h>
+
+#define INFINITY 9999
+#define MAX 30
+#define NIL -1
+#define TRUE 1
+#define FALSE 0
+
+/* 
+0 2 1 8 0 0
+4 0 6 0 4 0
+1 3 0 4 6 4
+8 0 5 0 0 3
+0 2 4 0 0 8
+0 0 5 1 8 0
+
+Minimum Spanning tree cost=13
+Minimum Spanning tree edges ar
+(0,2): 1 
+(3,5): 2
+(0,1): 3
+(4,1): 3
+(5,2): 4
+*/
+
+struct PriorityQueue
+{
+int key[MAX],count;	
+};
+void Initialize(int k[MAX],int p[MAX],int n,int r)
+{
+	int i;
+	for(i=0;i<n;i++)
+	{
+		k[i]=INFINITY;
+		p[i]=NIL;
+	}
+	k[r]=0;
+}
+void Decrease(int a[MAX],int i,int keyValue)
+{
+	int parent,temp;
+	a[i]=keyValue;
+	while(i>0&&a[Parent(i)]>a[i])
+	{
+		temp=a[i];
+		a[i]=a[Parent(i)];
+		a[Parent(i)]=temp;
+		i=Parent(i);
+	}
+}
+void MinHeapInsert(int a[MAX],int keyValue,int size)
+{
+	size++;
+	a[size-1]=INFINITY;
+	Decrease(a,size,keyValue);
+}
+int Parent(int i)
+{
+	return (i-1)/2;
+}
+void MinHeapify(int a[MAX],int i,int n)
+{
+	int l,r,min,t;
+	l=2*i+1;
+	r=2*i+2;
+	t=n-1;
+	if(l<=t&&a[l]<a[i])
+		min=l;
+	else
+		min=i;
+	if(r<=t&&a[r]<a[min])
+		min=r;
+	if(min!=i&&min<n)
+/*exchange a[i] and a[min]*/
+	{
+		t=a[i];
+		a[i]=a[min];
+		a[min]=t;
+		MinHeapify(a,min,n);
+	}
+}
+int ExtractMin(int a[MAX],int heapsize)
+{
+	int min,i;
+	min=a[0];		
+	a[0]=a[heapsize-1];
+	heapsize--;
+	MinHeapify(a,0,heapsize);
+	return min;
+}
+void Prim(int G[MAX][MAX],int w[MAX][MAX],int n,int s){
+	int u,v,i,j,k,mincost,dmin,S[MAX],d[MAX],p[MAX];
+	struct PriorityQueue Q;	
+	mincost=0;
+	Initialize(d,p,n,s);
+	Q.count=0;
+	for(i=0;i<n;i++)
+	{
+		S[i]=FALSE;
+		MinHeapInsert(Q.key,d[i],Q.count);
+		Q.count++;
+	}	
+	printf("Initial\n");
+	printf("Key:          ");
+	for(i=0;i<n;i++)
+		printf("%d  ",d[i]);
+	printf("\nPredecessor: ");
+	for(i=0;i<n;i++)
+		printf("%d  ",p[i]);
+	printf("\n\n");	
+	while(Q.count>0)
+	{
+		printf("Iteration %d\n",n-Q.count+1);
+		dmin=ExtractMin(Q.key,Q.count);
+		for(i=0;i<n;i++)
+		if(dmin==d[i]&&S[i]==FALSE)
+		break;
+		u=i;
+		S[u]=TRUE;	
+		for(v=0;v<n;v++)
+		{
+			if(G[u][v]>0&&S[v]==FALSE)
+			{
+				if(w[u][v]<d[v]){
+					p[v]=u;
+					d[v]=w[u][v];
+				}
+//				Relax(d,p,u,v,w);
+				for(j=0;j<Q.count;j++)
+				if(d[v]==Q.key[j])
+				break;
+				if(j>0)
+				Decrease(Q.key,j,d[v]);					
+			}
+		}
+		printf("Key:          ");
+		for(i=0;i<n;i++)
+		printf("%d  ",d[i]);
+		printf("\nPredecessor: ");		
+		for(i=0;i<n;i++)
+		printf("%d  ",p[i]);
+		printf("\n\n");	
+		Q.count--;
+	}
+	printf("Edges included in minimum spanning tree are\n");
+	for(i=1;i<n;i++){
+		printf("(%d,%d):   %d\n",p[i],i,d[i]);
+		mincost=mincost+d[i];
+	}
+	printf("Minimum cost is %d",mincost);
+}
+int main()
+{
+	int i,j,n,r,G[MAX][MAX],w[MAX][MAX];
+	printf("How many nodes: ");
+	scanf("%d",&n);
+	printf("Enter the weight matrix\n");
+	for(i=0;i<n;i++)
+		for(j=0;j<n;j++)
+		{
+			scanf("%d",&w[i][j]);
+			if(w[i][j]>0)
+			G[i][j]=1;
+			else
+			G[i][j]=0;
+		}		
+	printf("Enter the source vertex: ");
+	scanf("%d",&r);	
+	Prim(G,w,n,r);	
+	return 0;
+}

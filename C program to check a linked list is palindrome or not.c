@@ -1,236 +1,83 @@
-// C program to check a linked list
-
-// is palindrome or not
-
-#include <stdio.h>
-
-#include <stdlib.h>
-
-//Self referential structure to create node.
-
-typedef struct tmp {
-
-    int item;
-
-    struct tmp* next;
-
-} Node;
-
-//structure for create linked list.
-
-typedef struct
-
+#include <stdio.h> 
+#include <stdlib.h> 
+struct node
+{
+  int num;
+  struct node *next;
+};
+int create_List(struct node **);
+int palindrome_check(struct node *, int);
+void release_Node(struct node **);
+int palindrome_check(struct node *palindrome, int counter)
+{
+  int i = 0, j;
+  struct node *front, *rear;
+  while (i != counter / 2)
     {
-
-    Node* head;
-
-    Node* tail;
-
-} List;
-
-//Initialize List
-
-void initList(List* lp)
-
-{
-
-    lp->head = NULL;
-
-    lp->tail = NULL;
-
+      front = rear = palindrome;
+      for (j = 0; j < i; j++)
+	{
+	  front = front->next;
+	}
+      for (j = 0; j < counter - (i + 1); j++)
+	{
+	  rear = rear->next;
+	}
+      if (front->num != rear->num)
+	{
+	  return 0;
+	}
+      else
+	{
+	  i++;
+	}
+    }
+  return 1;
 }
-
-//Create node and return reference of it.
-
-Node* createNode(int item)
-
+int create_List(struct node **head)
 {
-
-    Node* nNode;
-
-    nNode = (Node*)malloc(sizeof(Node));
-
-    nNode->item = item;
-
-    nNode->next = NULL;
-
-    return nNode;
-
+  int n, ch, counter = 0;
+  struct node *temp;
+  do
+    {
+      printf ("Enter the data into the list :  ");
+      scanf ("%d ", &n);
+      counter++;
+      temp = (struct node *) malloc (sizeof (struct node));
+      temp->num = n;
+      temp->next = *head;
+      *head = temp;
+      printf ("Do you want enter more elements in the list press [1/0] :  ");
+      scanf ("%d ", &ch);
+     }
+  while (ch != 0);
+  printf ("\n ");
+  return counter;
 }
-
-//Add new item at the end of list.
-
-void addAtTail(List* lp, int item)
-
+void release_Node(struct node **head)
 {
-
-    Node* node;
-
-    node = createNode(item);
-
-    //if list is empty.
-
-    if (lp->head == NULL) {
-
-        lp->head = node;
-
-        lp->tail = node;
-
+  struct node *temp = *head;
+  while ((*head) != NULL)
+    {
+      (*head) = (*head)->next;
+      free (temp);
+      temp = *head;
     }
-
-    else {
-
-        lp->tail->next = node;
-
-        lp->tail = lp->tail->next;
-
-    }
-
 }
-
-//Add new item at begning of the list.
-
-void addAtHead(List* lp, int item)
-
+int main ()
 {
-
-    Node* node;
-
-    node = createNode(item);
-
-    //if list is empty.
-
-    if (lp->head == NULL) {
-
-        lp->head = node;
-
-        lp->tail = node;
-
+  struct node *palindrome = NULL;
+  int result, counter;
+  counter = create_List(&palindrome);
+  result = palindrome_check (palindrome, counter);
+  if (result == 1)
+    {
+      printf ("The linked list is a palindrome.\n ");
     }
-
-    else {
-
-        node->next = lp->head;
-
-        lp->head = node;
-
+  else
+    {
+      printf ("The linked list is not a palindrome.\n ");
     }
-
+  release_Node(&palindrome);
+  return  0;
 }
-
-//To print list from start to end of the list.
-
-void printList(List* lp)
-
-{
-
-    Node* node;
-
-    if (lp->head == NULL) {
-
-        printf("\nEmpty List");
-
-        return;
-
-    }
-
-    node = lp->head;
-
-    while (node != NULL) {
-
-        printf("| %05d |", node->item);
-
-        node = node->next;
-
-        if (node != NULL)
-
-            printf("--->");
-
-    }
-
-    printf("\n\n");
-
-}
-
-int isPalindrome(List* lp)
-
-{
-
-    Node* temp;
-
-    int arr[100];
-
-    int flag = 1;
-
-    int count = 0;
-
-    temp = lp->head;
-
-    while (temp != NULL) {
-
-        arr[count++] = temp->item;
-
-        temp = temp->next;
-
-    }
-
-    temp = lp->head;
-
-    count = count - 1;
-
-    while (temp != NULL) {
-
-        if (arr[count--] != temp->item) {
-
-            flag = 0;
-
-            break;
-
-        }
-
-        temp = temp->next;
-
-    }
-
-    return flag;
-
-}
-
-//Main function to execute program.
-
-int main()
-
-{
-
-    List* lp;
-
-    lp = (List*)malloc(sizeof(List));
-
-    initList(lp);
-
-    addAtHead(lp, 100);
-
-    addAtHead(lp, 200);
-
-    addAtHead(lp, 300);
-
-    addAtHead(lp, 200);
-
-    addAtHead(lp, 100);
-
-    printf("List:\n");
-
-    printList(lp);
-
-    if (isPalindrome(lp))
-
-        printf("List is palindrome\n");
-
-    else
-
-        printf("List is not palindrome\n");
-
-    return 0;
-
-}
-

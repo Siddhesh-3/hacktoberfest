@@ -1,47 +1,53 @@
-#include <bits/stdc++.h>
-
+/ C++ program to count number of 0s in the given
+// row-wise and column-wise sorted binary matrix.
+#include <iostream>
 using namespace std;
-
- // } Driver Code Ends
-//Back-end complete function Template for C++
-
-class Solution{
-public:
-	int countZeros(vector<vector<int>>A)
-	{  int count=0;
-	  int N=A.size();
-	  
-		for(int i=0;i<N;i++)
-		{
-		    for(int j=0;j<N;j++)
-		    {
-		        if(A[i][j]==0)
-		        count++;
-		    }
-		}return count;
-	}
-};
-
-// { Driver Code Starts.
-
-// Driver program
+// define size of square matrix
+#define N 5
+ 
+// Function to count number of 0s in the given
+// row-wise and column-wise sorted binary matrix.
+int countZeroes(int mat[N][N])
+{
+    // start from bottom-left corner of the matrix
+    int row = N - 1, col = 0;
+ 
+    // stores number of zeroes in the matrix
+    int count = 0;
+ 
+    while (col < N)
+    {
+        // move up until you find a 0
+        while (mat[row][col])
+ 
+            // if zero is not found in current column,
+            // we are done
+            if (--row < 0)
+                return count;
+ 
+        // add 0s present in current column to result
+        count += (row + 1);
+ 
+        // move right to next column
+        col++;
+    }
+ 
+    return count;
+}
+ 
+// Driver Program to test above functions
 int main()
 {
-    int t;
-    cin>>t;
-    while(t--)
+    int mat[N][N] =
     {
-        int n;
-        cin>>n;
-        vector<vector<int>>A(n,vector<int>(n,0));
-        for(int i=0;i<n;i++){
-            for(int j =0;j<n;j++){
-                cin>>A[i][j];
-            }
-        }
-        Solution ob;
-        cout<<ob.countZeros(A)<<'\n';
-    }
+        { 0, 0, 0, 0, 1 },
+        { 0, 0, 0, 1, 1 },
+        { 0, 1, 1, 1, 1 },
+        { 1, 1, 1, 1, 1 },
+        { 1, 1, 1, 1, 1 }
+    };
+ 
+    cout << countZeroes(mat);
+ 
     return 0;
 }
-  // } Driver Code Ends

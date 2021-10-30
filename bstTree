@@ -1,0 +1,221 @@
+#include<iostream>
+#include<windows.h>
+//TODO
+//wyszukiwanie elementu w drzewie
+struct tree{
+
+    int value;
+    tree *father;
+    tree *left;
+    tree *right;
+};
+
+tree* Initialization()
+{
+    return NULL;
+}
+tree* InsertValue(tree *actuallyRoot, int valueToInsert)
+{
+    if(actuallyRoot == NULL)
+    {
+        tree *newRoot = new tree;
+        newRoot->value = valueToInsert;
+        newRoot->left = NULL;
+        newRoot->right = NULL;
+
+        return newRoot;
+    }
+    else if(valueToInsert < actuallyRoot->value)
+        actuallyRoot->left = InsertValue(actuallyRoot->left, valueToInsert);
+    else
+        actuallyRoot->right = InsertValue(actuallyRoot->right, valueToInsert);
+    return actuallyRoot;
+}
+
+void ReadInOrder(tree *actuallyRoot)
+{
+    if(actuallyRoot)
+    {
+        ReadInOrder(actuallyRoot->left);
+        std::cout<<actuallyRoot->value<<std::endl;
+        ReadInOrder(actuallyRoot->right);
+    }
+}
+
+
+tree* SearchTheLowestRoot(tree* actuallyRoot)
+{
+    tree* theLowestRoot = actuallyRoot;
+
+    while(theLowestRoot->left !=NULL)
+        theLowestRoot = theLowestRoot->left;
+
+    return theLowestRoot;
+}
+
+
+tree * DropElement(tree * actuallyRoot, int valueToInsert)
+{
+    if(actuallyRoot == NULL) return actuallyRoot;
+    if(valueToInsert < actuallyRoot->value)
+        actuallyRoot->left = DropElement(actuallyRoot->left,valueToInsert);
+    else if(valueToInsert>actuallyRoot->value)
+        actuallyRoot->right = DropElement(actuallyRoot->right, valueToInsert);
+    else
+    {
+        tree* temp;
+
+        if(actuallyRoot->left == NULL)
+        {
+            temp = actuallyRoot->right;
+            free(actuallyRoot);
+            return temp;
+        }
+        if(actuallyRoot->right == NULL)
+        {
+            temp = actuallyRoot->left;
+            free(actuallyRoot);
+            return temp;
+        }
+
+        temp = SearchTheLowestRoot(actuallyRoot->right);
+
+        actuallyRoot->value = temp->value;
+        actuallyRoot->right = DropElement(actuallyRoot->right, temp->value);
+    }
+    return actuallyRoot;
+}
+
+void DropTree(tree* actuallyRoot)
+{
+    if(actuallyRoot == NULL) return;
+
+    DropTree(actuallyRoot->right);
+    DropTree(actuallyRoot->left);
+    std::cout<<"usunieto"<<actuallyRoot->value<<"element"<<std::endl;
+    free(actuallyRoot);
+}
+
+int SearchHeightTree(tree* actuallyRoot)
+{
+    if(actuallyRoot == NULL) return -1;
+
+    int left = SearchHeightTree(actuallyRoot->left);
+    int right = SearchHeightTree(actuallyRoot->right);
+
+    if(left > right) return left+1;
+    else return right+1;
+}
+
+void SearchElementInTree(tree* actuallyRoot,int searchingValue)
+{
+    if(actuallyRoot)
+    {
+        if(actuallyRoot->value == searchingValue) std::cout<<actuallyRoot->value<<std::endl;
+        else if(searchingValue<actuallyRoot->value && actuallyRoot->left!=NULL) SearchElementInTree(actuallyRoot->left,searchingValue);
+        else if(searchingValue>actuallyRoot->value && actuallyRoot->right!=NULL) SearchElementInTree(actuallyRoot->right,searchingValue);
+
+    }
+}
+
+int main()
+{
+    tree* mainTree = Initialization();
+
+    for(;;)
+    {
+        std::cout<<"MENU"<<std::endl;
+        std::cout<<"1. Dodanie elementu do drzewa"<<std::endl;
+        std::cout<<"2. Przeglądanie drzewa w porządku inorder"<<std::endl;
+        std::cout<<"3. wyszukiwanie elemetu w drzewie"<<std::endl;
+        std::cout<<"4. usun z drzewa element"<<std::endl;
+        std::cout<<"5. usun drzewo"<<std::endl;
+        std::cout<<"6. zwroc wysokosc drzewa"<<std::endl;
+        std::cout<<"7. zakoncz"<<std::endl;
+
+        int choice;
+        std::cin >> choice;
+
+        switch(choice)
+        {
+            case 1:
+                    int valueToInsert;
+                    std::cout<<"podaj jaka wartosc chcesz wstawiv :"<<std::endl;
+                    std::cin>>valueToInsert;
+                    mainTree = InsertValue(mainTree, valueToInsert);
+                    std::cout<< "wstawiono wartosc "<<valueToInsert<<std::endl;
+                    system("PAUSE");
+            break;
+
+            case 2:
+                    if(mainTree == NULL)
+                    {
+                        std::cout<<"Drzewo jest puste"<<std::endl;
+                        break;
+                    }
+
+                    std::cout<<"drzewo w porzadku inorder: "<<std::endl;
+                    ReadInOrder(mainTree);
+
+                    system("PAUSE");
+            break;
+
+            case 3:
+                int searchingValue;
+                std::cout<<" podaj wartosc ktora chcesz wyszukac"<<std::endl;
+                std::cin>>searchingValue;
+
+                if(mainTree == NULL)
+                    {
+                        std::cout<<"Drzewo jest puste"<<std::endl;
+                        break;
+                    }
+
+                    std::cout<<"znalezione wartosci: "<<std::endl;
+                    SearchElementInTree(mainTree,searchingValue);
+
+                    system("PAUSE");
+            break;
+
+            case 4:
+                int valueToDelete;
+                std::cout<<" podaj wartosc ktora chcesz usunac"<<std::endl;
+                std::cin>>valueToDelete;
+                if(mainTree)
+                {
+                    mainTree = DropElement(mainTree, valueToDelete);
+                    std::cout<< " usunieto wartosc "<< valueToDelete<<std::endl;
+                }
+                else std::cout<<"Drzewo jest puste"<<std::endl;
+                system("PAUSE");
+            break;
+
+            case 5:
+                    if(mainTree)
+                    {
+                        DropTree(mainTree);
+                        mainTree=NULL;
+                        std::cout<<"Drzewo zostalo usuniete"<<std::endl;
+                    }
+                    else std::cout<< "drzewo jest puste" <<std::endl;
+                    system("PAUSE");
+            break;
+
+            case 6:
+                    if(mainTree)
+                    {
+                        std::cout<<"wysokosc drzewa wynosi : " <<SearchHeightTree(mainTree)<<std::endl;;
+                    }
+                    else std::cout<<"Drzewo jest puste"<<std::endl;
+                    system("PAUSE");
+            break;
+            case 7:
+                    return 0;
+            break;
+        }
+
+        system("CLS");
+
+    }
+    return 0;
+}
